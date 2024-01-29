@@ -1,0 +1,109 @@
+package com.timprogrammiert.Filesystem.Path;
+
+import com.timprogrammiert.Exceptions.FileNotFoundException;
+import com.timprogrammiert.Exceptions.NotADirectoryException;
+import com.timprogrammiert.Filesystem.BaseFile;
+import com.timprogrammiert.Filesystem.Directories.DirectoryObject;
+import com.timprogrammiert.Filesystem.Filesystem;
+
+/**
+ * Author : Tim
+ * Date: 29.01.2024
+ * Version: 1.0
+ */
+
+
+/**
+ * A utility class for resolving file paths within a filesystem.
+ */
+public class PathResolver {
+    Filesystem filesystem;
+
+    /**
+     * Constructor for the PathResolver class.
+     *
+     * @param filesystem The filesystem to be used for path resolution.
+     */
+    public PathResolver(Filesystem filesystem) {
+        this.filesystem = filesystem;
+    }
+
+    /**
+     * Resolves a given Path, either as a relative or global path.
+     *
+     * @param path The Path object to be resolved.
+     * @return The BaseFile corresponding to the resolved path.
+     * @throws FileNotFoundException If the specified path is not found.
+     */
+    public BaseFile resolvePath(Path path) throws FileNotFoundException, NotADirectoryException {
+        String pathString = path.getPathString();
+
+        // Check if the path is global or relative and delegate to the appropriate resolver
+        if (pathString.startsWith("/")) {
+            return resolveGlobalPath(pathString);
+        } else {
+            return resolveRelativePath(pathString);
+        }
+    }
+
+    /**
+     * Resolves a relative file path starting in the current directory.
+     *
+     * @param pathString The path to resolve, where each segment is separated by '/'.
+     * @return The BaseFile corresponding to the resolved path.
+     * @throws FileNotFoundException If the specified path is not found.
+     */
+    private BaseFile resolveRelativePath(String pathString) throws FileNotFoundException, NotADirectoryException {
+        DirectoryObject currentDirectory = filesystem.getCurrentDirectory();
+        if (pathString.isEmpty()) {
+            return currentDirectory;
+        }
+
+        // Split the path into individual segments
+        String[] subFiles = pathString.split("/");
+        BaseFile targetFile = null;
+
+        boolean found;
+
+        // Iterate through each segment of the path
+        for (String file : subFiles) {
+            found = false;
+
+            // Search for a matching child in the current directory
+            for (BaseFile baseFile : currentDirectory.getChildObjects()) {
+                if (baseFile.getName().equals(file)) {
+                    // Found a match, update targetFile and set found to true
+                    targetFile = baseFile;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                throw new FileNotFoundException("Path not found: " + pathString);
+            }
+
+            try {
+                // Update current directory for the next iteration
+                currentDirectory = (DirectoryObject) targetFile;
+            } catch (ClassCastException e){
+                throw new NotADirectoryException(file);
+            }
+
+        }
+
+        return targetFile;
+    }
+
+    /**
+     * Placeholder for resolving global file paths (absolute paths).
+     *
+     * @param pathString The global path to be resolved.
+     * @return The BaseFile corresponding to the resolved global path.
+     */
+    private BaseFile resolveGlobalPath(String pathString) {
+        // Currently not implemented, returns null
+        return null;
+    }
+}
+
