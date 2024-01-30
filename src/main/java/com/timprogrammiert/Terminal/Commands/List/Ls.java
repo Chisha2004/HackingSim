@@ -39,10 +39,6 @@ public class Ls implements ICommand {
             detailed = true;
         }
 
-        /*
-        TODO
-        - Filepath . or .. should also be valid an processed
-         */
         // If empty -> getCurrent; else resolve Path
         DirectoryObject targetObject = arguments.isEmpty()
                 ? computer.getOperatingSystem().getFilesystem().getCurrentDirectory()
@@ -61,11 +57,11 @@ public class Ls implements ICommand {
      */
     private DirectoryObject pathToDirectory(List<String> arguments) throws FileNotFoundException, NotADirectoryException {
         String pathString = arguments.getFirst();
-        Path pathToList = new Path(pathString);
+        Path path = new Path(pathString);
 
-        if (pathToList.isValidPath()) {
+        if (path.isValidPath()) {
             PathResolver pathResolver = new PathResolver(computer.getOperatingSystem().getFilesystem());
-            BaseFile targetObject = pathResolver.resolvePath(pathToList);
+            BaseFile targetObject = pathResolver.resolvePath(path);
 
             if (targetObject.getFileType().equals(EnumFileTypes.Directory)) {
                 return (DirectoryObject) targetObject;
@@ -98,7 +94,7 @@ public class Ls implements ICommand {
 
     private String getDetailedInfoOfObject(BaseFile baseFile, String aliasName) {
         if(baseFile == null) return "";
-        String objectName = aliasName.isEmpty() ? baseFile.getName() : aliasName;
+        String fileName = aliasName.isEmpty() ? baseFile.getName() : aliasName;
         Permissions permissions = baseFile.getPermissions();
 
         // 4095 Jan 10 10:10 -> atm placeholder
@@ -106,7 +102,7 @@ public class Ls implements ICommand {
                 permissions.getPermissionString(),
                 permissions.getUser().getUserName(),
                 permissions.getGroup().getGroupName(),
-                objectName
+                fileName
         );
     }
 

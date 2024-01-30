@@ -55,21 +55,22 @@ public class PathResolver {
      */
     private BaseFile resolveRelativePath(String pathString) throws FileNotFoundException, NotADirectoryException {
         DirectoryObject currentDirectory = filesystem.getCurrentDirectory();
-        if (pathString.isEmpty()) {
+
+        // Handle special cases for ".", "..", and empty paths
+        if (pathString.isEmpty() || pathString.equals(".")) {
             return currentDirectory;
+        } else if (pathString.equals("..") && currentDirectory.getParentFolder() != null) {
+            return currentDirectory.getParentFolder();
         }
 
         // Split the path into individual segments
         String[] subFiles = pathString.split("/");
         BaseFile targetFile = null;
 
-        boolean found;
-
         // Iterate through each segment of the path
         for (String file : subFiles) {
-            found = false;
-
             // Search for a matching child in the current directory
+            boolean found = false;
             for (BaseFile baseFile : currentDirectory.getChildObjects()) {
                 if (baseFile.getName().equals(file)) {
                     // Found a match, update targetFile and set found to true
@@ -79,21 +80,21 @@ public class PathResolver {
                 }
             }
 
+            // Handle the case where the file is not found
             if (!found) {
                 throw new FileNotFoundException("Path not found: " + pathString);
             }
 
-            try {
-                // Update current directory for the next iteration
-                currentDirectory = (DirectoryObject) targetFile;
-            } catch (ClassCastException e){
+            // Update current directory for the next iteration
+            if (!(targetFile instanceof DirectoryObject)) {
                 throw new NotADirectoryException(file);
             }
-
+            currentDirectory = (DirectoryObject) targetFile;
         }
 
         return targetFile;
     }
+
 
     /**
      * Placeholder for resolving global file paths (absolute paths).
