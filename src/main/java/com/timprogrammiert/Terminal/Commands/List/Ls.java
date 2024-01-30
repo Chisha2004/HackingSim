@@ -11,6 +11,9 @@ import com.timprogrammiert.Filesystem.Path.PathResolver;
 import com.timprogrammiert.Filesystem.Permissions.Permissions;
 import com.timprogrammiert.Terminal.Commands.ICommand;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +37,7 @@ public class Ls implements ICommand {
     private String handleArguments(String[] args) throws FileNotFoundException, NotADirectoryException {
         boolean detailed = false;
         List<String> arguments = new ArrayList<>(Arrays.asList(args));
+        arguments.removeIf(String::isBlank);
 
         if (arguments.remove("-al")) {
             detailed = true;
@@ -67,11 +71,11 @@ public class Ls implements ICommand {
                 return (DirectoryObject) targetObject;
             } else {
                 // If the resolved object is not a directory, throw an exception
-                throw new NotADirectoryException(pathString + " is not a directory.");
+                throw new NotADirectoryException(pathString);
             }
         } else {
             // If the path is not valid, throw an exception
-            throw new FileNotFoundException("Invalid path: " + pathString);
+            throw new FileNotFoundException(pathString);
         }
     }
 
@@ -96,14 +100,22 @@ public class Ls implements ICommand {
         if(baseFile == null) return "";
         String fileName = aliasName.isEmpty() ? baseFile.getName() : aliasName;
         Permissions permissions = baseFile.getPermissions();
+        Timestamp modifiedTime = baseFile.getMetaData().getModifiedDate();
 
-        // 4095 Jan 10 10:10 -> atm placeholder
-        return String.format("%s %s %s 4095 Jan 10 10:10 %s\n",
+        return String.format("%s %s %s %s 4095 %s %s\n",
                 permissions.getPermissionString(),
                 permissions.getUser().getUserName(),
                 permissions.getGroup().getGroupName(),
+                baseFile.getMetaData().getModifiedCounter(),
+                formatTimeStamp(modifiedTime),
                 fileName
         );
+    }
+
+    private String formatTimeStamp(Timestamp timestamp){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd HH:mm");
+        LocalDateTime dateTime = timestamp.toLocalDateTime();
+        return dateTime.format(formatter);
     }
 
     private String listSimple(DirectoryObject directoryToList){

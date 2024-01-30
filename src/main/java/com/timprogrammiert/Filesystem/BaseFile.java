@@ -11,10 +11,12 @@ public class BaseFile {
     Permissions permissions;
     String name;
     EnumFileTypes fileType;
+    MetaData metaData;
     protected BaseFile(Permissions permissions, String name, EnumFileTypes fileTypes){
         this.permissions = permissions;
         this.name = name;
         this.fileType = fileTypes;
+        this.metaData = new MetaData();
     }
     public String getName(){
         return name;
@@ -26,5 +28,9 @@ public class BaseFile {
 
     public Permissions getPermissions() {
         return permissions;
+    }
+
+    public MetaData getMetaData() {
+        return metaData;
     }
 }
