@@ -12,8 +12,10 @@ public class Permissions {
     User user;
     Group group;
     String permissionString;
-    public Permissions(){
-
+    public Permissions(User belongsToUser, Group belongsToGroup, String permissionString){
+        this.user = belongsToUser;
+        this.group = belongsToGroup;
+        this.permissionString = permissionString;
     }
     public String getPermissionString(){
         return permissionString;

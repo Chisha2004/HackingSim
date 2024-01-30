@@ -8,7 +8,7 @@ package com.timprogrammiert.OperatingSystem.Users;
 public class User {
     String password;
     String userName;
-    public User(String password, String userName){
+    public User(String userName, String password){
         this.password = password;
         this.userName = userName;
     }

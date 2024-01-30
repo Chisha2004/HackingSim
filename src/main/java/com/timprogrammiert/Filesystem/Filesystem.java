@@ -13,22 +13,7 @@ public class Filesystem {
     DirectoryObject currentDirectory;
     DirectoryObject rootFolder;
     public Filesystem(){
-        testFilesystem();
-    }
 
-    private void testFilesystem(){
-        rootFolder = new DirectoryObject(new Permissions(), "/", EnumFileTypes.Directory);
-        DirectoryObject bin = new DirectoryObject(new Permissions(), "bin", EnumFileTypes.Directory, rootFolder);
-        DirectoryObject etc = new DirectoryObject(new Permissions(), "etc", EnumFileTypes.Directory, bin);
-        FileObject fileObject1 = new FileObject(new Permissions(), "TestFile", EnumFileTypes.File,etc);
-
-        rootFolder.addChild(bin);
-        bin.addChild(etc);
-        etc.addChild(fileObject1);
-
-        DirectoryObject log = new DirectoryObject(new Permissions(), "log", EnumFileTypes.Directory, bin);
-
-        currentDirectory = rootFolder;
     }
 
     public DirectoryObject getCurrentDirectory(){
@@ -39,4 +24,11 @@ public class Filesystem {
         return rootFolder;
     }
 
+    public void setCurrentDirectory(DirectoryObject currentDirectory) {
+        this.currentDirectory = currentDirectory;
+    }
+
+    public void setRootFolder(DirectoryObject rootFolder) {
+        this.rootFolder = rootFolder;
+    }
 }

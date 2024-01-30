@@ -39,6 +39,10 @@ public class Ls implements ICommand {
             detailed = true;
         }
 
+        /*
+        TODO
+        - Filepath . or .. should also be valid an processed
+         */
         // If empty -> getCurrent; else resolve Path
         DirectoryObject targetObject = arguments.isEmpty()
                 ? computer.getOperatingSystem().getFilesystem().getCurrentDirectory()
@@ -75,33 +79,35 @@ public class Ls implements ICommand {
         }
     }
 
-    private String listAll(DirectoryObject directoryToList){
+    private String listAll(DirectoryObject directoryToList) {
         StringBuilder output = new StringBuilder();
+
+        // Append detailed info for the current directory
         output.append(getDetailedInfoOfObject(directoryToList, "."));
+
+        // Append detailed info for the parent directory
         output.append(getDetailedInfoOfObject(directoryToList.getParentFolder(), ".."));
-        for (BaseFile baseFile : directoryToList.getChildObjects()){
-            //output.append(baseFile.getName()).append("\n");
+
+        // Append detailed info for each child object
+        for (BaseFile baseFile : directoryToList.getChildObjects()) {
             output.append(getDetailedInfoOfObject(baseFile, ""));
         }
+
         return output.toString().strip();
     }
 
-    private String getDetailedInfoOfObject(BaseFile baseFile, String aliasName){
-        StringBuilder output = new StringBuilder();
+    private String getDetailedInfoOfObject(BaseFile baseFile, String aliasName) {
+        if(baseFile == null) return "";
         String objectName = aliasName.isEmpty() ? baseFile.getName() : aliasName;
         Permissions permissions = baseFile.getPermissions();
-        output.append(permissions.getPermissionString()).append(" ");
-        //output.append(permissions.getUser().getUserName()).append(" ");
-        output.append("Hans").append(" ");
-        //output.append(permissions.getGroup().getGroupName()).append(" ");
-        output.append("Hans").append(" ");
-        output.append("4095").append(" ");
-        output.append("Jan").append(" ");
-        output.append("10").append(" ");
-        output.append("10:10").append(" ");
-        output.append(objectName).append("\n");
 
-        return output.toString();
+        // 4095 Jan 10 10:10 -> atm placeholder
+        return String.format("%s %s %s 4095 Jan 10 10:10 %s\n",
+                permissions.getPermissionString(),
+                permissions.getUser().getUserName(),
+                permissions.getGroup().getGroupName(),
+                objectName
+        );
     }
 
     private String listSimple(DirectoryObject directoryToList){
