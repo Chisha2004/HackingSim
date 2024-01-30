@@ -8,6 +8,7 @@ import com.timprogrammiert.Filesystem.Directories.DirectoryObject;
 import com.timprogrammiert.Filesystem.EnumFileTypes;
 import com.timprogrammiert.Filesystem.Path.Path;
 import com.timprogrammiert.Filesystem.Path.PathResolver;
+import com.timprogrammiert.Filesystem.Permissions.Permissions;
 import com.timprogrammiert.Terminal.Commands.ICommand;
 
 import java.util.ArrayList;
@@ -75,7 +76,32 @@ public class Ls implements ICommand {
     }
 
     private String listAll(DirectoryObject directoryToList){
-        return "";
+        StringBuilder output = new StringBuilder();
+        output.append(getDetailedInfoOfObject(directoryToList, "."));
+        output.append(getDetailedInfoOfObject(directoryToList.getParentFolder(), ".."));
+        for (BaseFile baseFile : directoryToList.getChildObjects()){
+            //output.append(baseFile.getName()).append("\n");
+            output.append(getDetailedInfoOfObject(baseFile, ""));
+        }
+        return output.toString().strip();
+    }
+
+    private String getDetailedInfoOfObject(BaseFile baseFile, String aliasName){
+        StringBuilder output = new StringBuilder();
+        String objectName = aliasName.isEmpty() ? baseFile.getName() : aliasName;
+        Permissions permissions = baseFile.getPermissions();
+        output.append(permissions.getPermissionString()).append(" ");
+        //output.append(permissions.getUser().getUserName()).append(" ");
+        output.append("Hans").append(" ");
+        //output.append(permissions.getGroup().getGroupName()).append(" ");
+        output.append("Hans").append(" ");
+        output.append("4095").append(" ");
+        output.append("Jan").append(" ");
+        output.append("10").append(" ");
+        output.append("10:10").append(" ");
+        output.append(objectName).append("\n");
+
+        return output.toString();
     }
 
     private String listSimple(DirectoryObject directoryToList){

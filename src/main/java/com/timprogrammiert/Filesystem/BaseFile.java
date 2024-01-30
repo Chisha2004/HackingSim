@@ -23,4 +23,8 @@ public class BaseFile {
     public EnumFileTypes getFileType() {
         return fileType;
     }
+
+    public Permissions getPermissions() {
+        return permissions;
+    }
 }
