@@ -42,17 +42,18 @@ public class OperatingSystem {
         return group;
     }
     private void createStartFileStructure(){
-        Permissions permissions = new Permissions(currentUser, createGroup("root"), "rwxrwxr--" );
-        DirectoryObject rootFolder = new DirectoryObject(permissions, "/", EnumFileTypes.Directory);
-        DirectoryObject bin = new DirectoryObject(permissions, "bin", EnumFileTypes.Directory, rootFolder);
-        DirectoryObject etc = new DirectoryObject(permissions, "etc", EnumFileTypes.Directory, bin);
-        FileObject fileObject1 = new FileObject(permissions, "TestFile", EnumFileTypes.File,etc);
+        Permissions dirPermissions = new Permissions(currentUser, createGroup("root"), "drwxrwxr--" );
+        Permissions filePermissions = new Permissions(currentUser, createGroup("root"), "-rwxrwxr--" );
+        DirectoryObject rootFolder = new DirectoryObject(dirPermissions, "/", EnumFileTypes.Directory);
+        DirectoryObject bin = new DirectoryObject(dirPermissions, "bin", EnumFileTypes.Directory, rootFolder);
+        DirectoryObject etc = new DirectoryObject(dirPermissions, "etc", EnumFileTypes.Directory, bin);
+        FileObject fileObject1 = new FileObject(filePermissions, "TestFile", EnumFileTypes.File,etc);
 
         rootFolder.addChild(bin);
         bin.addChild(etc);
         etc.addChild(fileObject1);
 
-        DirectoryObject log = new DirectoryObject(permissions, "log", EnumFileTypes.Directory, bin);
+        DirectoryObject log = new DirectoryObject(dirPermissions, "log", EnumFileTypes.Directory, bin);
         bin.addChild(log);
         filesystem.setRootFolder(rootFolder);
         filesystem.setCurrentDirectory(rootFolder);

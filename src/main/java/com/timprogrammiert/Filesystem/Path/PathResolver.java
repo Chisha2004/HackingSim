@@ -6,6 +6,9 @@ import com.timprogrammiert.Filesystem.BaseFile;
 import com.timprogrammiert.Filesystem.Directories.DirectoryObject;
 import com.timprogrammiert.Filesystem.Filesystem;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Author : Tim
  * Date: 29.01.2024
@@ -82,7 +85,7 @@ public class PathResolver {
 
             // Handle the case where the file is not found
             if (!found) {
-                throw new FileNotFoundException("Path not found: " + pathString);
+                throw new FileNotFoundException(pathString);
             }
 
             // Update current directory for the next iteration
@@ -97,14 +100,60 @@ public class PathResolver {
 
 
     /**
-     * Placeholder for resolving global file paths (absolute paths).
+     * Resolves the global file path (absolute path).
      *
      * @param pathString The global path to be resolved.
      * @return The BaseFile corresponding to the resolved global path.
      */
-    private BaseFile resolveGlobalPath(String pathString) {
-        // Currently not implemented, returns null
-        return null;
+    private BaseFile resolveGlobalPath(String pathString) throws FileNotFoundException, NotADirectoryException {
+        // Check if the path is the root ("/")
+        if (pathString.equals("/")) {
+            return filesystem.getRootFolder();
+        }
+
+        // Split the path into sub-names, filter out blank elements, and collect them into a list
+        List<String> subNames = Arrays.stream(pathString.split("/"))
+                .filter(s -> !s.isBlank())
+                .toList();
+
+        // Start with the root folder
+        DirectoryObject targetFile = filesystem.getRootFolder();
+
+        // Iterate through each sub-name in the path
+        for (int i = 0; i < subNames.size(); i++) {
+            String subName = subNames.get(i);
+            boolean isLastSegment = (i == subNames.size() - 1);
+
+            boolean found = false;
+
+            // Search for a matching child in the current directory
+            for (BaseFile subFile : targetFile.getChildObjects()) {
+                if (subFile.getName().equals(subName)) {
+                    // Found a match
+                    if (subFile instanceof DirectoryObject) {
+                        // If it's a directory, update targetFile
+                        targetFile = (DirectoryObject) subFile;
+                        found = true;
+                        break;
+                    } else if (isLastSegment) {
+                        // Only return FileObjects if its a File
+                        return subFile;
+                    }else {
+                        throw new NotADirectoryException(subNames.get(i));
+                    }
+                }
+            }
+
+            // Handle the case where the sub-name is not found
+            if (!found) {
+                throw new FileNotFoundException(pathString);
+            }
+        }
+
+        // Return the target directory after resolving the path
+        return targetFile;
     }
+
+
 }
 
