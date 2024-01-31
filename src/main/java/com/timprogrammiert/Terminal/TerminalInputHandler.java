@@ -33,6 +33,8 @@ public class TerminalInputHandler {
      * @throws CommandNotFoundException If the entered command is not recognized.
      */
     public String handleInput(String inputString) throws CommandNotFoundException {
+        if(inputString.isBlank()){return "";}
+
         // Extract the command and arguments from the input string
         ICommand command = substractCommand(inputString);
         String[] arguments = substractArguments(inputString);
