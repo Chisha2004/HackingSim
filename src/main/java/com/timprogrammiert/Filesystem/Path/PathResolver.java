@@ -15,10 +15,6 @@ import java.util.List;
  * Version: 1.0
  */
 
-
-/**
- * A utility class for resolving file paths within a filesystem.
- */
 public class PathResolver {
     Filesystem filesystem;
 
@@ -57,45 +53,51 @@ public class PathResolver {
      * @throws FileNotFoundException If the specified path is not found.
      */
     private BaseFile resolveRelativePath(String pathString) throws FileNotFoundException, NotADirectoryException {
-        DirectoryObject currentDirectory = filesystem.getCurrentDirectory();
+        DirectoryObject subTargetDirectory = filesystem.getCurrentDirectory();
 
         // Handle special cases for ".", "..", and empty paths
         if (pathString.isEmpty() || pathString.equals(".")) {
-            return currentDirectory;
-        } else if (pathString.equals("..") && currentDirectory.getParentFolder() != null) {
-            return currentDirectory.getParentFolder();
+            return subTargetDirectory;
+        } else if (pathString.equals("..") && subTargetDirectory.getParentFolder() != null) {
+            return subTargetDirectory.getParentFolder();
         }
 
         // Split the path into individual segments
         String[] subFiles = pathString.split("/");
-        BaseFile targetFile = null;
+        //BaseFile targetFile = null;
 
         // Iterate through each segment of the path
-        for (String file : subFiles) {
-            // Search for a matching child in the current directory
+        for (int i = 0; i < subFiles.length; i++) {
+            boolean isLastSegment = (i == subFiles.length - 1);
+            String subName = subFiles[i];
             boolean found = false;
-            for (BaseFile baseFile : currentDirectory.getChildObjects()) {
-                if (baseFile.getName().equals(file)) {
-                    // Found a match, update targetFile and set found to true
-                    targetFile = baseFile;
-                    found = true;
-                    break;
+
+            // Search for a matching child in the current directory
+            for (BaseFile baseFile : subTargetDirectory.getChildObjects()) {
+                if (baseFile.getName().equals(subName)) {
+                    // Found a match
+                    if (baseFile instanceof DirectoryObject) {
+                        // If it's a directory, update targetFile
+                        subTargetDirectory = (DirectoryObject) baseFile;
+                        found = true;
+                        break;
+                    } else if (isLastSegment) {
+                        // Only return FileObjects if its a File
+                        return baseFile;
+                    }else {
+                        // PathResolver can also throw NotADirectoryException
+                        // It happens if a subDirectory in the Path is a File
+                        // e.g /Folder/FILE/Folder/File
+                        throw new NotADirectoryException(subFiles[i]);
+                    }
                 }
             }
-
             // Handle the case where the file is not found
             if (!found) {
                 throw new FileNotFoundException(pathString);
             }
-
-            // Update current directory for the next iteration
-            if (!(targetFile instanceof DirectoryObject)) {
-                throw new NotADirectoryException(file);
-            }
-            currentDirectory = (DirectoryObject) targetFile;
         }
-
-        return targetFile;
+        return subTargetDirectory;
     }
 
 
@@ -139,6 +141,9 @@ public class PathResolver {
                         // Only return FileObjects if its a File
                         return subFile;
                     }else {
+                        // PathResolver can also throw NotADirectoryException
+                        // It happens if a subDirectory in the Path is a File
+                        // e.g /Folder/FILE/Folder/File
                         throw new NotADirectoryException(subNames.get(i));
                     }
                 }
