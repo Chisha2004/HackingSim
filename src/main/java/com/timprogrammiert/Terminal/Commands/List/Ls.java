@@ -3,11 +3,13 @@ package com.timprogrammiert.Terminal.Commands.List;
 import com.timprogrammiert.Computer.Computer;
 import com.timprogrammiert.Exceptions.FileNotFoundException;
 import com.timprogrammiert.Exceptions.NotADirectoryException;
+import com.timprogrammiert.Exceptions.PermissionDeniedException;
 import com.timprogrammiert.Filesystem.BaseFile;
 import com.timprogrammiert.Filesystem.Directories.DirectoryObject;
 import com.timprogrammiert.Filesystem.EnumFileTypes;
 import com.timprogrammiert.Filesystem.Path.Path;
 import com.timprogrammiert.Filesystem.Path.PathResolver;
+import com.timprogrammiert.Filesystem.Permissions.PermissionChecker;
 import com.timprogrammiert.Filesystem.Permissions.Permissions;
 import com.timprogrammiert.Terminal.Commands.ICommand;
 
@@ -30,11 +32,11 @@ public class Ls implements ICommand {
         this.computer = computer;
         try {
            return handleArguments(args);
-        } catch (FileNotFoundException | NotADirectoryException e){
+        } catch (FileNotFoundException | NotADirectoryException | PermissionDeniedException e){
             return e.getMessage();
         }
     }
-    private String handleArguments(String[] args) throws FileNotFoundException, NotADirectoryException {
+    private String handleArguments(String[] args) throws FileNotFoundException, NotADirectoryException, PermissionDeniedException {
         boolean detailed = false;
         List<String> arguments = new ArrayList<>(Arrays.asList(args));
         arguments.removeIf(String::isBlank);
@@ -47,6 +49,9 @@ public class Ls implements ICommand {
         DirectoryObject targetObject = arguments.isEmpty()
                 ? computer.getOperatingSystem().getFilesystem().getCurrentDirectory()
                 : pathToDirectory(arguments);
+
+        PermissionChecker pemChecker = new PermissionChecker(targetObject.getPermissions(), computer.getOperatingSystem().getCurrentUser());
+        if(!pemChecker.isCanRead()) throw new PermissionDeniedException();
 
         return detailed ? listAll(targetObject) : listSimple(targetObject);
     }
