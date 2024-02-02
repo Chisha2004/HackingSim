@@ -33,6 +33,7 @@ public class PathResolver {
      * @param path The Path object to be resolved.
      * @return The BaseFile corresponding to the resolved path.
      * @throws FileNotFoundException If the specified path is not found.
+     * @throws NotADirectoryException If a subDirectory in the Path is not a Directory.
      */
     public BaseFile resolvePath(Path path) throws FileNotFoundException, NotADirectoryException {
         String pathString = path.getPathString();
