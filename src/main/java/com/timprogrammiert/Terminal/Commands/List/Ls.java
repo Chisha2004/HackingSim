@@ -115,7 +115,8 @@ public class Ls implements ICommand {
     private String formatTimeStamp(Timestamp timestamp){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd HH:mm");
         LocalDateTime dateTime = timestamp.toLocalDateTime();
-        return dateTime.format(formatter);
+        // Old output Feb. or Jan. -> The POINT IS ANNOYING
+        return dateTime.format(formatter).replace(".", "");
     }
 
     private String listSimple(DirectoryObject directoryToList){
