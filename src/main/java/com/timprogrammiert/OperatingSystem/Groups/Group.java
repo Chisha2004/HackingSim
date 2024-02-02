@@ -2,6 +2,7 @@ package com.timprogrammiert.OperatingSystem.Groups;
 
 import com.timprogrammiert.OperatingSystem.Users.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ public class Group {
     List<User> groupMembers;
 
     public Group(String groupName) {
+        this.groupMembers = new ArrayList<>();
         this.groupName = groupName;
     }
 
@@ -23,5 +25,8 @@ public class Group {
 
     public boolean hasMember(User userToSearch){
         return groupMembers.contains(userToSearch);
+    }
+    public void addMemberToGroup(User userName){
+        groupMembers.add(userName);
     }
 }
