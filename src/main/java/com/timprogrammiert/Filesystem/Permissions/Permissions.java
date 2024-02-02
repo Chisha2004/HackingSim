@@ -31,6 +31,11 @@ public class Permissions {
     public void setUser(User user) {
         this.user = user;
     }
+    public void updatePermissions(Permissions updatedPermission){
+        user = updatedPermission.getUser();
+        group = updatedPermission.getGroup();
+        permissionString = updatedPermission.getPermissionString();
+    }
 
     public Group getGroup() {
         return group;
