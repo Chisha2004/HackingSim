@@ -3,6 +3,7 @@ package com.timprogrammiert.Terminal;
 import com.timprogrammiert.Computer.Computer;
 import com.timprogrammiert.Terminal.Commands.ChangeDirectory.ChangeDirectory;
 import com.timprogrammiert.Exceptions.CommandNotFoundException;
+import com.timprogrammiert.Terminal.Commands.Chmod.Chmod;
 import com.timprogrammiert.Terminal.Commands.ICommand;
 import com.timprogrammiert.Terminal.Commands.List.Ls;
 
@@ -64,6 +65,8 @@ public class TerminalInputHandler {
                 return new ChangeDirectory();
             case "ls":
                 return new Ls();
+            case "chmod":
+                return new Chmod();
             default:
                 return null;
         }
