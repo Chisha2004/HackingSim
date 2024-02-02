@@ -9,3 +9,4 @@ extensions = [
     'sphinx.ext.autodoc',  # Automatically generate API documentation from docstrings
     'sphinx.ext.viewcode',  # Add "View source" links to your documentation
 ]
+master_doc = 'index'
