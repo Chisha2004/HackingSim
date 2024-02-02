@@ -34,18 +34,32 @@ public class OperatingSystem {
         return filesystem;
     }
     public User createUser(String userName, String password){
-        return new User(userName, password);
+        User newUser = new User(userName, password);
+        Group newGroup = createGroup(userName);
+        newGroup.addMemberToGroup(newUser);
+        return newUser;
     }
     public Group createGroup(String groupName){
+        // Inefficient Check if Group already exists
+        // Groups on OS Level should be stored in a MAP to get Groups easy by Groupname
+        for (Group group : groupList){
+            if (group.getGroupName().equals(groupName)){
+                return group;
+            }
+        }
         Group group = new Group(groupName);
         groupList.add(group);
         return group;
     }
     private void createStartFileStructure(){
+        Permissions testPermissions = new Permissions(createUser("testUser", "testPass"), createGroup("root"), "drwxrwxr--" );
+
         Permissions dirPermissions = new Permissions(currentUser, createGroup("root"), "drwxrwxr--" );
         Permissions filePermissions = new Permissions(currentUser, createGroup("root"), "-rwxrwxr--" );
         DirectoryObject rootFolder = new DirectoryObject(dirPermissions, "/", EnumFileTypes.Directory);
-        DirectoryObject bin = new DirectoryObject(dirPermissions, "bin", EnumFileTypes.Directory, rootFolder);
+
+        DirectoryObject bin = new DirectoryObject(testPermissions, "bin", EnumFileTypes.Directory, rootFolder);
+
         DirectoryObject etc = new DirectoryObject(dirPermissions, "etc", EnumFileTypes.Directory, bin);
         FileObject fileObject1 = new FileObject(filePermissions, "TestFile", EnumFileTypes.File,etc);
 
@@ -57,5 +71,13 @@ public class OperatingSystem {
         bin.addChild(log);
         filesystem.setRootFolder(rootFolder);
         filesystem.setCurrentDirectory(rootFolder);
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 }
