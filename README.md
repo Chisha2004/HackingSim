@@ -6,3 +6,7 @@ HackingSim is an exciting project in its early development stages, aiming to bec
 - Command-Line Interface: Implement a powerful command-line interface for players to navigate the virtual world.
 - Diverse Challenges: Create a variety of hacking challenges, ranging from basic exploits to advanced cybersecurity puzzles.
 - Learning Opportunities: Develop HackingSim as an educational tool for aspiring ethical hackers, providing a platform to hone their skills and learn new techniques.
+
+## Contribution Guidelines
+We welcome contributions from the community to help enhance and improve HackingSim. 
+Before you get started, please take a moment to review our [contribution guidelines](https://github.com/UnexperiencedDeveloper/HackingSim/blob/master/contribute.md) to ensure a smooth and collaborative experience.
