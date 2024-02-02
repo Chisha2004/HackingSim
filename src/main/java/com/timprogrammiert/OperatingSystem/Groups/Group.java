@@ -1,5 +1,9 @@
 package com.timprogrammiert.OperatingSystem.Groups;
 
+import com.timprogrammiert.OperatingSystem.Users.User;
+
+import java.util.List;
+
 /**
  * Author : Tim
  * Date: 30.01.2024
@@ -7,6 +11,7 @@ package com.timprogrammiert.OperatingSystem.Groups;
  */
 public class Group {
     String groupName;
+    List<User> groupMembers;
 
     public Group(String groupName) {
         this.groupName = groupName;
@@ -14,5 +19,9 @@ public class Group {
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public boolean hasMember(User userToSearch){
+        return groupMembers.contains(userToSearch);
     }
 }
