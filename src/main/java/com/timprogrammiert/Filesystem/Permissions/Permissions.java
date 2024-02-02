@@ -17,6 +17,9 @@ public class Permissions {
         this.group = belongsToGroup;
         this.permissionString = permissionString;
     }
+
+    // Only for ls Command
+    // Should use PermissionChecker to evaluate the Permissions
     public String getPermissionString(){
         return permissionString;
     }
