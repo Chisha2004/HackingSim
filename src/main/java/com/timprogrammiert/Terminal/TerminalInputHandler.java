@@ -6,6 +6,7 @@ import com.timprogrammiert.Exceptions.CommandNotFoundException;
 import com.timprogrammiert.Terminal.Commands.Chmod.Chmod;
 import com.timprogrammiert.Terminal.Commands.ICommand;
 import com.timprogrammiert.Terminal.Commands.List.Ls;
+import com.timprogrammiert.Terminal.Commands.id.Id;
 
 import java.util.Arrays;
 
@@ -67,6 +68,8 @@ public class TerminalInputHandler {
                 return new Ls();
             case "chmod":
                 return new Chmod();
+            case "id":
+                return new Id();
             default:
                 return null;
         }
