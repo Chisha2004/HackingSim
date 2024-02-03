@@ -13,10 +13,19 @@ import java.util.Map;
 public class Group {
     String groupName;
     Map<String, User> groupMembers;
+    GroupInfo groupInfo;
 
+    /**
+     * @deprecated
+     */
     public Group(String groupName) {
         this.groupMembers = new HashMap<>();
         this.groupName = groupName;
+    }
+    public Group(String groupName, GroupInfo groupInfo) {
+        this.groupMembers = new HashMap<>();
+        this.groupName = groupName;
+        this.groupInfo = groupInfo;
     }
 
     public String getGroupName() {
@@ -28,5 +37,9 @@ public class Group {
     }
     public void addMemberToGroup(User user){
         groupMembers.put(user.getUserName(), user);
+    }
+
+    public GroupInfo getGroupInfo() {
+        return groupInfo;
     }
 }

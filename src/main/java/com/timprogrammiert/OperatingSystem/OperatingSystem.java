@@ -1,12 +1,13 @@
 package com.timprogrammiert.OperatingSystem;
 
-import com.timprogrammiert.Computer.Computer;
 import com.timprogrammiert.Filesystem.Directories.DirectoryObject;
 import com.timprogrammiert.Filesystem.EnumFileTypes;
 import com.timprogrammiert.Filesystem.Files.FileObject;
 import com.timprogrammiert.Filesystem.Filesystem;
 import com.timprogrammiert.Filesystem.Permissions.Permissions;
 import com.timprogrammiert.OperatingSystem.Groups.Group;
+import com.timprogrammiert.OperatingSystem.Groups.GroupInfo;
+import com.timprogrammiert.OperatingSystem.Users.AccountInfo;
 import com.timprogrammiert.OperatingSystem.Users.User;
 
 import java.util.HashMap;
@@ -22,12 +23,16 @@ public class OperatingSystem {
     Filesystem filesystem;
     Map<String, Group> groupList;
     Map<String, List<User>> userList;
+    UidManager uidManager;
+    GidManager gidManager;
     User currentUser;
 
     public OperatingSystem(Filesystem filesystem){
         this.filesystem = filesystem;
         this.userList = new HashMap<>();
         this.groupList = new HashMap<>();
+        this.uidManager = new UidManager();
+        this.gidManager = new GidManager();
         this.currentUser = createUser("root", "root");
         createStartFileStructure();
     }
@@ -39,26 +44,31 @@ public class OperatingSystem {
             // Return null if user already exists ?
             return null;
         }else {
-            User newUser = new User(userName, password);
-            Group userGroup = createGroup(userName);
+            AccountInfo accountInfo = new AccountInfo(uidManager.generateUid());
+            User newUser = new User(userName, password, accountInfo);
+            uidManager.addUserToList(newUser);
+
+            Group userGroup = getOrCreateGroup(userName);
+            newUser.addToGroup(userGroup);
             userGroup.addMemberToGroup(newUser);
             return newUser;
         }
     }
-    public Group createGroup(String groupName){
+    public Group getOrCreateGroup(String groupName){
         if(groupList.containsKey(groupName)){
             return groupList.get(groupName);
         }else {
-            Group newGroup = new Group(groupName);
+            GroupInfo groupInfo = new GroupInfo();
+            Group newGroup = new Group(groupName, groupInfo);
             groupList.put(groupName, newGroup);
             return newGroup;
         }
     }
     private void createStartFileStructure(){
-        Permissions testPermissions = new Permissions(createUser("testUser", "testPass"), createGroup("root"), "drwxrwxr--" );
+        Permissions testPermissions = new Permissions(createUser("testUser", "testPass"), getOrCreateGroup("root"), "drwxrwxr--" );
 
-        Permissions dirPermissions = new Permissions(currentUser, createGroup("root"), "drwxrwxr--" );
-        Permissions filePermissions = new Permissions(currentUser, createGroup("root"), "-rwxrwxr--" );
+        Permissions dirPermissions = new Permissions(currentUser, getOrCreateGroup("root"), "drwxrwxr--" );
+        Permissions filePermissions = new Permissions(currentUser, getOrCreateGroup("root"), "-rwxrwxr--" );
         DirectoryObject rootFolder = new DirectoryObject(dirPermissions, "/", EnumFileTypes.Directory);
 
         DirectoryObject bin = new DirectoryObject(testPermissions, "bin", EnumFileTypes.Directory, rootFolder);
@@ -82,5 +92,13 @@ public class OperatingSystem {
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
+    }
+
+    public UidManager getUidManager() {
+        return uidManager;
+    }
+
+    public GidManager getGidManager() {
+        return gidManager;
     }
 }
