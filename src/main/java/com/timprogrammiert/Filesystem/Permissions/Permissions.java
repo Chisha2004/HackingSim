@@ -18,6 +18,12 @@ public class Permissions {
         this.permissionString = permissionString;
     }
 
+    public Permissions(User belongsToUser, Group belongsToGroup){
+        this.user = belongsToUser;
+        this.group = belongsToGroup;
+        this.permissionString = permissionString;
+    }
+
     // Only for ls Command
     // Should use PermissionChecker to evaluate the Permissions
     public String getPermissionString(){
