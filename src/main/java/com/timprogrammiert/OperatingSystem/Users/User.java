@@ -2,10 +2,7 @@ package com.timprogrammiert.OperatingSystem.Users;
 
 import com.timprogrammiert.OperatingSystem.Groups.Group;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author : Tim
@@ -15,6 +12,7 @@ import java.util.Map;
 public class User {
     String password;
     String userName;
+    AccountInfo accountInfo;
     Map<String, Group> groupList;
   
     public User(String userName, String password, AccountInfo accountInfo){
@@ -48,8 +46,8 @@ public class User {
         return groupList.get(groupName);
     }
 
-    public List<Group> getAllGroups(){
-        return (List<Group>) groupList.values();
+    public Collection<Group> getAllGroups(){
+        return  groupList.values();
 
     }
 }

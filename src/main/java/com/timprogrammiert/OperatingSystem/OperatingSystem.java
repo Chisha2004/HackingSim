@@ -58,8 +58,9 @@ public class OperatingSystem {
         if(groupList.containsKey(groupName)){
             return groupList.get(groupName);
         }else {
-            GroupInfo groupInfo = new GroupInfo();
+            GroupInfo groupInfo = new GroupInfo(gidManager.generateUid());
             Group newGroup = new Group(groupName, groupInfo);
+            gidManager.addGroupToList(newGroup);
             groupList.put(groupName, newGroup);
             return newGroup;
         }
