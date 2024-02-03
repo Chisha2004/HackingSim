@@ -16,16 +16,7 @@ public class User {
     String password;
     String userName;
     Map<String, Group> groupList;
-    AccountInfo accountInfo;
-
-    /**
-     * @deprecated
-     */
-    public User(String userName, String password){
-        this.password = password;
-        this.userName = userName;
-    }
-
+  
     public User(String userName, String password, AccountInfo accountInfo){
         this.password = password;
         this.userName = userName;
@@ -49,14 +40,16 @@ public class User {
         return userName;
     }
 
-    public Group getSpecificGroup(String groupName){
-        return groupList.get(groupName);
-    }
     public void addToGroup(Group group){
         groupList.put(group.getGroupName(), group);
     }
 
-    public Collection<Group> getAllGroups(){
-        return groupList.values();
+    public Group getSpecificGroup(String groupName){
+        return groupList.get(groupName);
+    }
+
+    public List<Group> getAllGroups(){
+        return (List<Group>) groupList.values();
+
     }
 }
