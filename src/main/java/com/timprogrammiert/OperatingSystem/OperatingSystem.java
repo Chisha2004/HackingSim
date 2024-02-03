@@ -9,8 +9,9 @@ import com.timprogrammiert.Filesystem.Permissions.Permissions;
 import com.timprogrammiert.OperatingSystem.Groups.Group;
 import com.timprogrammiert.OperatingSystem.Users.User;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author : Tim
@@ -19,14 +20,14 @@ import java.util.List;
  */
 public class OperatingSystem {
     Filesystem filesystem;
-    List<User> userList;
-    List<Group> groupList;
+    Map<String, Group> groupList;
+    Map<String, List<User>> userList;
     User currentUser;
 
     public OperatingSystem(Filesystem filesystem){
         this.filesystem = filesystem;
-        this.userList = new ArrayList<>();
-        this.groupList = new ArrayList<>();
+        this.userList = new HashMap<>();
+        this.groupList = new HashMap<>();
         this.currentUser = createUser("root", "root");
         createStartFileStructure();
     }
@@ -34,22 +35,24 @@ public class OperatingSystem {
         return filesystem;
     }
     public User createUser(String userName, String password){
-        User newUser = new User(userName, password);
-        Group newGroup = createGroup(userName);
-        newGroup.addMemberToGroup(newUser);
-        return newUser;
+        if(userList.containsKey(userName)){
+            // Return null if user already exists ?
+            return null;
+        }else {
+            User newUser = new User(userName, password);
+            Group userGroup = createGroup(userName);
+            userGroup.addMemberToGroup(newUser);
+            return newUser;
+        }
     }
     public Group createGroup(String groupName){
-        // Inefficient Check if Group already exists
-        // Groups on OS Level should be stored in a MAP to get Groups easy by Groupname
-        for (Group group : groupList){
-            if (group.getGroupName().equals(groupName)){
-                return group;
-            }
+        if(groupList.containsKey(groupName)){
+            return groupList.get(groupName);
+        }else {
+            Group newGroup = new Group(groupName);
+            groupList.put(groupName, newGroup);
+            return newGroup;
         }
-        Group group = new Group(groupName);
-        groupList.add(group);
-        return group;
     }
     private void createStartFileStructure(){
         Permissions testPermissions = new Permissions(createUser("testUser", "testPass"), createGroup("root"), "drwxrwxr--" );

@@ -2,8 +2,8 @@ package com.timprogrammiert.OperatingSystem.Groups;
 
 import com.timprogrammiert.OperatingSystem.Users.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Author : Tim
@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class Group {
     String groupName;
-    List<User> groupMembers;
+    Map<String, User> groupMembers;
 
     public Group(String groupName) {
-        this.groupMembers = new ArrayList<>();
+        this.groupMembers = new HashMap<>();
         this.groupName = groupName;
     }
 
@@ -24,9 +24,9 @@ public class Group {
     }
 
     public boolean hasMember(User userToSearch){
-        return groupMembers.contains(userToSearch);
+        return groupMembers.containsKey(userToSearch.getUserName());
     }
-    public void addMemberToGroup(User userName){
-        groupMembers.add(userName);
+    public void addMemberToGroup(User user){
+        groupMembers.put(user.getUserName(), user);
     }
 }
