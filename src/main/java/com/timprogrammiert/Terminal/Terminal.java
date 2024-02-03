@@ -40,7 +40,7 @@ public class Terminal {
     private void initTerminal() {
         String input = "";
         Scanner scanner = new Scanner(System.in);
-
+        String result = "";
         // Continuous loop for user interaction
         while (isRunning) {
             System.out.print(currentDirectoryToString() + "> ");
@@ -48,7 +48,12 @@ public class Terminal {
 
             try {
                 // Process user input using the TerminalInputHandler
-                System.out.println(inputHandler.handleInput(input));
+                result = inputHandler.handleInput(input);
+                if(result.isEmpty()){System.out.print("");}
+                else {
+                    System.out.println(result);
+                }
+
             } catch (CommandNotFoundException e) {
                 // Handle command not found exception and display an error message
                 System.out.println(e.getMessage());
