@@ -26,6 +26,7 @@ import java.util.List;
  */
 public class Chmod implements ICommand {
     Computer computer;
+    private final static int FILE_PATH_INDEX = 1;
 
     /**
      * Executes the Chmod command with the provided arguments.
@@ -59,23 +60,22 @@ public class Chmod implements ICommand {
      * @throws InvalidArgumentsException   If the provided arguments are invalid.
      * @throws PermissionDeniedException   If the user lacks the necessary permissions.
      */
-    private String handleArguments(List<String> argList) throws NotADirectoryException, FileNotFoundException, InvalidArgumentsException, PermissionDeniedException {
+    private String handleArguments(List<String> argList) throws NotADirectoryException, FileNotFoundException,
+            InvalidArgumentsException, PermissionDeniedException {
         String permissionCode = argList.getFirst();
         if(!(isValid(permissionCode))){throw new InvalidArgumentsException();}
-        String filePath = argList.get(1);
+        String filePath = argList.get(FILE_PATH_INDEX);
 
         Path path = new Path(filePath);
         PathResolver pathResolver = new PathResolver(computer.getOperatingSystem().getFilesystem());
         BaseFile file = pathResolver.resolvePath(path);
 
         PermissionChecker pemChecker = new PermissionChecker(file.getPermissions(), computer.getOperatingSystem().getCurrentUser());
-        if(file.getFileType().equals(EnumFileTypes.File) && pemChecker.isCanWrite()){
-            // Change FILE PERMISSIONS
-            PermissionCreater pemCreater = new PermissionCreater();
-        } else if (file.getFileType().equals(EnumFileTypes.Directory) && pemChecker.isCanWrite() && pemChecker.isCanExecute()) {
-            // CHANGE DIRECTORY PERMISSIONS
-            PermissionCreater pemCreater = new PermissionCreater();
-        }else {
+        PermissionCreater pemCreater = new PermissionCreater(file, permissionCode);
+        if ((file.getFileType().equals(EnumFileTypes.File) && pemChecker.isCanWrite()) || file.getFileType().equals(EnumFileTypes.Directory) &&
+                pemChecker.isCanWrite() && pemChecker.isCanExecute()) {
+                pemCreater.updatePermission();
+        } else {
             throw new PermissionDeniedException();
         }
         return "";
